@@ -63,29 +63,33 @@ class Blockchain {
      */
     _addBlock(block) {
         let self = this;
-        return new Promise(async (resolve, reject) => {          
-            // If there is a previous block, get the previous blocks hash
-            if (self.chain.length > 0) {
-                // Get previous block in chain
-                let previousBlock = self.chain[self.chain.length - 1];
-                // Assign previous block hash to current block.previousBlockHash property 
-                block.previousBlockHash = previousBlock.hash;
-            }  
-            // Add hash to block.hash property
-            block.hash = SHA256(JSON.stringify(block)).toString();
-            // Increment new block height property using current block height
-            block.height = self.height + 1;
-            // Add current timestamp to block.time property
-            block.time = new Date().getTime().toString().slice(0, -3);                       
-            // Add new block to chain
-            self.chain.push(block);
-            // Increment height number in chain after adding new block 
-            self.height += 1;  
-            // Validate chain when a new block is added.            
-            if(resolve("Block added")){     
+        let errors = [];
+        return new Promise(async (resolve, reject) => {
+            try{
+                // If there is a previous block, get the previous blocks hash
+                if (self.chain.length > 0) {
+                    // Get previous block in chain
+                    let previousBlock = self.chain[self.chain.length - 1];
+                    // Assign previous block hash to current block.previousBlockHash property 
+                    block.previousBlockHash = previousBlock.hash;
+                }  
+                // Add hash to block.hash property
+                block.hash = SHA256(JSON.stringify(block)).toString();
+                // Increment new block height property using current block height
+                block.height = self.height + 1;
+                // Add current timestamp to block.time property
+                block.time = new Date().getTime().toString().slice(0, -3);                                        
+                // Add new block to chain
+                self.chain.push(block);
+                // Increment height number in chain after adding new block 
+                self.height += 1; 
+                // Validate chain when a new block is added.
                 self.validateChain();
-            } 
-            reject(new Error, "Not able to add block");
+                // Return new block added.
+                resolve(block);     
+            } catch (error){
+                reject(new Error(error));
+            }               
         });
     }
     
@@ -125,8 +129,8 @@ class Blockchain {
         return new Promise(async (resolve, reject) => {
             let messageTime = parseInt(message.split(':')[1]);
             let currentTime = parseInt(new Date().getTime().toString().slice(0, -3));
-            let fiveMin = 5 * 60 * 1000;          
-            if((messageTime - currentTime) <= fiveMin){
+            let fiveMin = 5 * 60;          
+            if(messageTime - currentTime < fiveMin){
                if(bitcoinMessage.verify(message, address, signature)){
                    let block = new BlockClass.Block({owner:address, star:star});
                    await self._addBlock(block);
@@ -166,7 +170,7 @@ class Blockchain {
     getBlockByHeight(height) {
         let self = this;
         return new Promise((resolve, reject) => {
-            let block = self.chain.filter(p => p.height === height)[0];
+            let block = self.chain.find(p => p.height === height);
             if(block){
                 resolve(block);
             } else {
