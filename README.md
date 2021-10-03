@@ -6,7 +6,7 @@ An employer is trying to make a test of concept on how a Blockchain application 
 
 In order to run this program you will need the following:
 
-1. Computer(Windows or nMac OS)
+1. Computer(Windows or Mac OS)
 2. Node v14.17.6 >= Installed
 3. NPM 6.14.15 >= Installed
 4. Postman Installed
