@@ -126,7 +126,7 @@ class BlockchainController {
             if (errorLog.length === 0) {
                 return res.status(200).send("The chain is correct and doesn't have errors");
             } else {
-                var errorText = "";
+                let errorText = "";
                 errorLog.forEach(async (errorFound, index) => {
                     if (index === errorLog.length - 1) {
                         errorText = errorText.concat(errorFound);
